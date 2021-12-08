@@ -1,8 +1,12 @@
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { Input, Button, Flex, Alert, AlertIcon, AlertTitle, CloseButton } from "@chakra-ui/react";
+
 
 import * as css from "./Signup.styles";
 import { SignupForm } from "./Signup.types";
+import { useSignUp } from "../../services";
+import { useEffect } from "react";
 
 export default function Signup() {
   const {
@@ -11,18 +15,43 @@ export default function Signup() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data: SignupForm) => {
-    const { password, confirmPassword } = data;
+
+  const navigate = useNavigate();
+
+  const { data, mutate, error, isError, isLoading } = useSignUp();
+
+  const onSubmit = async (data: SignupForm) => {
+    const { password, confirmPassword, email, firstName, lastName } = data;
     console.log(data);
     if (password !== confirmPassword) {
-      setError("password", {
+      return setError("password", {
         type: "password",
         message: "Passwords don't match",
       });
     }
+
+    const payload = {
+        email,
+        password,
+        firstName, 
+        lastName
+    };
+
+     return mutate(payload);
   };
 
+  console.log('error :>> ', error);
   console.log("errors :>> ", errors);
+  console.log(`isError`, isError);
+
+  console.log(`error.`, error?.response?.data?.error_message);
+  console.log(`data`, data);
+
+  useEffect(() => {
+    if(data){
+      navigate(`/profile/${data?.data?._id}`)
+    }
+  },[data, navigate]);
 
   return (
     <Flex height="100%" p={2} justifyContent="center" alignItems="center">
@@ -69,7 +98,15 @@ export default function Signup() {
             <CloseButton position="absolute" right="8px" top="8px" />
           </Alert>
         ) : null}
-        <Button mt={4} isLoading type="submit" colorScheme='teal' variant="solid">
+
+        {error?.response?.data?.error_message ? (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertTitle mr={2}>{error?.response?.data?.error_message} </AlertTitle>
+            <CloseButton position="absolute" right="8px" top="8px" />
+          </Alert>
+        ) : null}
+        <Button isLoading={isLoading} mt={4}  type="submit" colorScheme='teal' variant="solid">
           Button
         </Button>
       </css.Form>

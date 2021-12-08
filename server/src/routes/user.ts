@@ -28,7 +28,6 @@ router.get('/:userId', async (req, res) => {
 router.post('/signup', async (req, res) => {
   const {
     email, password, firstName, lastName,
-
   } = req?.body;
 
   const userExistsCheck = await User.find({ email });
@@ -39,9 +38,9 @@ router.post('/signup', async (req, res) => {
     });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-
   try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = new User({
       _id: new mongoose.Types.ObjectId(),
       profilePic: 'https://res.cloudinary.com/dbukg7rbr/image/upload/v1634170489/a_j14mm4.jpg',
@@ -79,6 +78,12 @@ router.post('/signup', async (req, res) => {
 
 router.put('/:userId', async (req, res) => {
   const { userId } = req?.params;
+
+  if (Object.keys(req.body).length === 0) {
+    return res.status(500).json({
+      error_message: 'Nothing was sent to the server',
+    });
+  }
 
   try {
     await User.findOneAndUpdate({ id: userId }, req?.body);

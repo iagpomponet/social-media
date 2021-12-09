@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Input, Button, Flex, Alert, AlertIcon, AlertTitle, CloseButton } from "@chakra-ui/react";
-
+import { Input, Button, Flex, Alert, AlertIcon, AlertTitle, CloseButton, Text } from "@chakra-ui/react";
 
 import * as css from "./Signup.styles";
 import { SignupForm } from "./Signup.types";
@@ -31,16 +30,16 @@ export default function Signup() {
     }
 
     const payload = {
-        email,
-        password,
-        firstName, 
-        lastName
+      email,
+      password,
+      firstName,
+      lastName,
     };
 
-     return mutate(payload);
+    return mutate(payload);
   };
 
-  console.log('error :>> ', error);
+  console.log("error :>> ", error);
   console.log("errors :>> ", errors);
   console.log(`isError`, isError);
 
@@ -48,43 +47,33 @@ export default function Signup() {
   console.log(`data`, data);
 
   useEffect(() => {
-    if(data){
-      navigate(`/profile/${data?.data?._id}`)
+    if (data) {
+      navigate(`/profile/${data?.data?._id}`);
     }
-  },[data, navigate]);
+  }, [data, navigate]);
 
   return (
-    <Flex height="100%" p={2} justifyContent="center" alignItems="center">
+    <Flex
+      height="380px"
+      width="100%"
+      maxWidth="400px"
+      flexDirection="column"
+      p={2}
+      justifyContent="center"
+      alignItems="center"
+    >
       <css.Form onSubmit={handleSubmit(onSubmit)}>
+        <Text mb={4} fontWeight="semibold" color="purple" fontSize="2xl" marginRight="auto">
+          Sign up
+        </Text>
         <Flex>
-          <Input
-            isInvalid={errors.firstName}
-            mb={2}
-            mr={1}
-            placeholder="First Name"
-            {...register("firstName", { required: true })}
-          />
-          <Input
-            isInvalid={errors.lastName}
-            mb={2}
-            placeholder="Last Name"
-            {...register("lastName", { required: true })}
-          />
+          <Input fontSize="sm" isInvalid={errors.firstName} mb={2} mr={1} placeholder="First Name" {...register("firstName", { required: true })} />
+          <Input fontSize="sm" isInvalid={errors.lastName} mb={2} placeholder="Last Name" {...register("lastName", { required: true })} />
         </Flex>
+        <Input  fontSize="sm" isInvalid={errors.email} mb={2} placeholder="Email" {...register("email", { required: true })} />
+        <Input  fontSize="sm" type="password" isInvalid={errors.password} mb={2} placeholder="Password" {...register("password", { required: true })} />
         <Input
-          isInvalid={errors.email}
-          mb={2}
-          placeholder="Email"
-          {...register("email", { required: true })}
-        />
-        <Input
-          type="password"
-          isInvalid={errors.password}
-          mb={2}
-          placeholder="Password"
-          {...register("password", { required: true })}
-        />
-        <Input
+        fontSize="sm"
           type="password"
           placeholder="Confirm Password"
           isInvalid={errors.confirmPassword}
@@ -106,8 +95,8 @@ export default function Signup() {
             <CloseButton position="absolute" right="8px" top="8px" />
           </Alert>
         ) : null}
-        <Button isLoading={isLoading} mt={4}  type="submit" colorScheme='teal' variant="solid">
-          Button
+        <Button fontSize="sm" isLoading={isLoading} mt={4} type="submit" colorScheme="purple" variant="solid">
+          Submit
         </Button>
       </css.Form>
     </Flex>

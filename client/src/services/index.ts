@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError } from "axios";
 import { useMutation } from "react-query";
 
 interface signUpPayload {

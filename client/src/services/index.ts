@@ -8,10 +8,22 @@ interface signUpPayload {
     lastName: string;
 }
 
+interface signInPayload {
+    email: string;
+    password: string;
+}
+
 const baseURL = "http://localhost:3000";
 
-export const signUp = (payload: signUpPayload) => {
+const signUp = (payload: signUpPayload) => {
     return axios.post(`${baseURL}/user/signup`, payload).then(res => res.data);
 }
 
 export const useSignUp = () => useMutation<any | undefined, AxiosError, any>(signUp);
+
+
+const signIn = (payload: signInPayload) => {
+    return axios.post(`${baseURL}/user/login`, payload).then(res => res.data);
+}
+
+export const useSignIn = () => useMutation(signIn);

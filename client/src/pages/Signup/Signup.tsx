@@ -39,13 +39,6 @@ export default function Signup() {
     return mutate(payload);
   };
 
-  console.log("error :>> ", error);
-  console.log("errors :>> ", errors);
-  console.log(`isError`, isError);
-
-  console.log(`error.`, error?.response?.data?.error_message);
-  console.log(`data`, data);
-
   useEffect(() => {
     if (data) {
       navigate(`/profile/${data?.data?._id}`);
@@ -54,11 +47,11 @@ export default function Signup() {
 
   return (
     <Flex
-      height="380px"
+      height="350px"
       width="100%"
-      maxWidth="400px"
+      maxWidth="360px"
       flexDirection="column"
-      p={2}
+      p={4}
       justifyContent="center"
       alignItems="center"
     >

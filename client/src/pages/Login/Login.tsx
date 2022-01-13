@@ -13,29 +13,40 @@ import { useSignIn } from "../../services";
 import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/react";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router";
+import { useAuth } from "../../context/auth";
+import { LoginProps } from "./Login.types";
 
-export default function Login() {
+export default function Login({ signUpOpen = false }: LoginProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { register, handleSubmit } = useForm();
   const { mutateAsync, isLoading, error, data } = useSignIn();
   const navigate = useNavigate();
 
+  const { setUserData } = useAuth();
+
   const tError = error as AxiosError;
 
   const onSubmit = async (data: any) => {
-    console.log("data :>> ", data);
-
     const response = await mutateAsync(data);
 
-    console.log("response :>> ", response);
+    setUserData({
+      isLogged: true,
+      data: response,
+    });
   };
-
 
   useEffect(() => {
     if (data) {
-      navigate(`/profile/${data?.data?._id}`);
+      console.log(`data`, data)
+      navigate(`/profile/${data?._id}`);
     }
   }, [data, navigate]);
+
+  useEffect(() => {
+    if (signUpOpen) {
+      navigate("/signup");
+    }
+  }, []);
 
   return (
     <>
@@ -43,7 +54,7 @@ export default function Login() {
         <Flex flexWrap={["wrap", "wrap", "wrap", "nowrap"]} width="100%" maxWidth="1200px" margin="0 auto" justifyContent="center">
           <Stack
             spacing="24px"
-            mr={[0,0,10]}
+            mr={[0, 0, 10]}
             mb={4}
             height="auto"
             p={4}
@@ -52,7 +63,16 @@ export default function Login() {
             alignItems="flex-start"
             flexDirection="column"
           >
-            <Text margin="0 auto" textAlign={["center", "center", "initial"]} maxWidth="200px" fontSize="4xl" color="purple" fontWeight="bold" letterSpacing="-2px" lineHeight="32px">
+            <Text
+              margin="0 auto"
+              textAlign={["center", "center", "initial"]}
+              maxWidth="200px"
+              fontSize="4xl"
+              color="purple"
+              fontWeight="bold"
+              letterSpacing="-2px"
+              lineHeight="32px"
+            >
               A Social Network
             </Text>
             <Text textAlign={["center", "center", "initial"]}>
@@ -68,7 +88,9 @@ export default function Login() {
               {tError?.response?.data?.error_message ? (
                 <Alert mb={2} status="error">
                   <AlertIcon />
-                  <AlertTitle fontSize="sm" mr={2}>{tError?.response?.data?.error_message} </AlertTitle>
+                  <AlertTitle fontSize="sm" mr={2}>
+                    {tError?.response?.data?.error_message}{" "}
+                  </AlertTitle>
                 </Alert>
               ) : null}
 
@@ -76,18 +98,36 @@ export default function Login() {
                 Enter
               </Button>
             </css.Form>
-            <Button fontSize="sm" colorScheme="purple" mt="auto" onClick={onOpen}>
+            <Button
+              fontSize="sm"
+              colorScheme="purple"
+              mt="auto"
+              onClick={() => {
+                navigate("/signup");
+              }}
+            >
               Create new account
             </Button>
           </Flex>
         </Flex>
       </Flex>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal
+        isOpen={signUpOpen}
+        onClose={() => {
+          navigate("/login");
+        }}
+      >
         <ModalOverlay />
         <ModalContent mx={4} position="relative" maxWidth="400px" display="flex" alignItems="center" backgroundColor="rgba(255,255,255,1)">
           <Box cursor="pointer" position="absolute" top="16px" right="16px">
-            <MdOutlineClose size={20} fill="#553C9A" onClick={onClose} />
+            <MdOutlineClose
+              size={20}
+              fill="#553C9A"
+              onClick={() => {
+                navigate("/login");
+              }}
+            />
           </Box>
           <Signup />
         </ModalContent>

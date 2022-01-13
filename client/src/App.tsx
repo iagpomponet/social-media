@@ -4,7 +4,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 import GlobalStyle from "./globalStyles";
-import Header from "./components/Header/Header";
+import Header from "./components/Header";
+import { AuthProvider } from "./context/auth";
 
 const queryClient = new QueryClient();
 
@@ -14,8 +15,10 @@ function App() {
       <GlobalStyle />
       <QueryClientProvider client={queryClient}>
         <Router>
-          <Header />
-          <Routes />
+          <AuthProvider>
+            <Header />
+            <Routes />
+          </AuthProvider>
         </Router>
       </QueryClientProvider>
     </ChakraProvider>

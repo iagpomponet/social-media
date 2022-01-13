@@ -6,6 +6,7 @@ import * as css from "./Signup.styles";
 import { SignupForm } from "./Signup.types";
 import { useSignUp } from "../../services";
 import { useEffect } from "react";
+import { useAuth } from "../../context/auth";
 
 export default function Signup() {
   const {
@@ -14,10 +15,12 @@ export default function Signup() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+ 
+  const { setUserData } = useAuth();
 
   const navigate = useNavigate();
 
-  const { data, mutate, error, isError, isLoading } = useSignUp();
+  const { data, mutateAsync, error, isLoading } = useSignUp();
 
   const onSubmit = async (data: SignupForm) => {
     const { password, confirmPassword, email, firstName, lastName } = data;
@@ -36,7 +39,12 @@ export default function Signup() {
       lastName,
     };
 
-    return mutate(payload);
+    const response = await mutateAsync(payload);
+
+    return setUserData({
+      isLogged: true, 
+      data: response
+    })
   };
 
   useEffect(() => {

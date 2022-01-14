@@ -37,7 +37,6 @@ export default function Login({ signUpOpen = false }: LoginProps) {
 
   useEffect(() => {
     if (data) {
-      console.log(`data`, data)
       navigate(`/profile/${data?._id}`);
     }
   }, [data, navigate]);

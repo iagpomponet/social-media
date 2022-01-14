@@ -1,15 +1,11 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
-import { UserData } from '../types/api';
+
+import { LoginState } from "../types/auth";
 
 interface AuthContextI {
   userData: LoginState | null;
   setUserData: React.Dispatch<React.SetStateAction<LoginState>>;
-}
-
-interface LoginState {
-  isLogged: boolean;
-  data: null | UserData;
 }
 
 const authContext = createContext<AuthContextI>({} as AuthContextI);

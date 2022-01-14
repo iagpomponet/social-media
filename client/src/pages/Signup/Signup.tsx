@@ -24,7 +24,7 @@ export default function Signup() {
 
   const onSubmit = async (data: SignupForm) => {
     const { password, confirmPassword, email, firstName, lastName } = data;
-    console.log(data);
+
     if (password !== confirmPassword) {
       return setError("password", {
         type: "password",

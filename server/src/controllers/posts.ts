@@ -4,6 +4,23 @@ import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 
 import Post from '../models/post';
+import User from '../models/user';
+
+const getUsersPosts = async (req: Request, res: Response) => {
+  const { userId } = req?.params;
+
+  try {
+    const user = await User.findById(userId) as any;
+    await (user).populate('posts');
+
+    return res.status(200).json(user?.posts);
+  } catch (error) {
+    return res.status(500).json({
+      error_message: 'Post fetching failed',
+      error_data: error,
+    });
+  }
+};
 
 const getPost = async (req: Request, res: Response) => {
   const { postId } = req?.params;
@@ -94,4 +111,5 @@ export default {
   getPost,
   createPost,
   likePost,
+  getUsersPosts,
 };

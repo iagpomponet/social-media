@@ -15,9 +15,7 @@ router.get('/:userId', async (req, res) => {
   const user = await User.findById(userId).select('-__v');
 
   if (user) {
-    return res.status(200).json({
-      data: user,
-    });
+    return res.status(200).json(user);
   }
 
   return res.status(500).json({
@@ -27,7 +25,7 @@ router.get('/:userId', async (req, res) => {
 
 router.post('/signup', async (req, res) => {
   const {
-    email, password, firstName, lastName,
+    email, password, firstName, lastName, description,
   } = req?.body;
 
   const userExistsCheck = await User.find({ email });
@@ -43,10 +41,12 @@ router.post('/signup', async (req, res) => {
 
     const user = new User({
       _id: new mongoose.Types.ObjectId(),
-      profilePic: 'https://res.cloudinary.com/dbukg7rbr/image/upload/v1634170489/a_j14mm4.jpg',
+      profilePic:
+        'https://res.cloudinary.com/dbukg7rbr/image/upload/v1634170489/a_j14mm4.jpg',
       email,
       firstName,
       lastName,
+      description,
       password: hashedPassword,
     });
 
@@ -54,20 +54,35 @@ router.post('/signup', async (req, res) => {
 
     const privateKey = process.env.JWT_SECRET as string;
 
-    const token = jwt.sign({
-      email: user?.email,
-      userId: user?._id,
-    }, privateKey, {
-      expiresIn: '1h',
-    });
-
-    return res.status(201).json({
-      message: 'User created',
-      data: {
-        _id: user?._id,
-        token,
+    const token = jwt.sign(
+      {
+        email: user?.email,
+        userId: user?._id,
       },
-    });
+      privateKey,
+      {
+        expiresIn: '1h',
+      },
+    );
+
+    return res
+      .cookie('socialMediaTokenLogin', token, {
+        expires: new Date(Date.now() + 900),
+        secure: false,
+        httpOnly: true,
+      })
+      .cookie('socialMediaIsLogged', 'true', {
+        expires: new Date(Date.now() + 900),
+        secure: false,
+        httpOnly: false,
+      })
+      .status(201)
+      .json({
+        message: 'User created',
+        data: {
+          _id: user?._id,
+        },
+      });
   } catch (error) {
     return res.status(500).json({
       error_message: 'Failed to create a user',
@@ -86,10 +101,11 @@ router.put('/:userId', async (req, res) => {
   }
 
   try {
-    await User.findOneAndUpdate({ id: userId }, req?.body);
+    const updatedUser = await User.findOneAndUpdate({ _id: userId }, req?.body);
 
     return res.status(200).json({
       message: 'Updated user with success',
+      data: updatedUser,
     });
   } catch (error) {
     return res.status(500).json({
@@ -117,18 +133,29 @@ router.post('/login', async (req, res) => {
     const privateKey = process.env.JWT_SECRET || '';
 
     if (isPasswordCorrect) {
-      const token = jwt.sign({
-        userId: user?._id,
-        email: user?.email,
-      }, privateKey,
+      const token = jwt.sign(
+        {
+          userId: user?._id,
+          email: user?.email,
+        },
+        privateKey,
         {
           expiresIn: '1h',
-        });
+        },
+      );
 
-      return res.status(200).json({
-        token,
-        data: user,
-      });
+      return res
+        .cookie('socialMediaTokenLogin', token, {
+          expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 10),
+          secure: false,
+          httpOnly: true,
+        })
+        .cookie('socialMediaIsLogged', 'true', {
+          expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 10),
+          secure: false,
+          httpOnly: false,
+        })
+        .status(200).json(user);
     }
 
     return res.status(500).json({
@@ -140,5 +167,9 @@ router.post('/login', async (req, res) => {
     });
   }
 });
+
+router.post('/signout', async (req, res) => res.status(200).clearCookie('socialMediaIsLogged').json({
+  message: 'User signed out successfully',
+}));
 
 export default router;

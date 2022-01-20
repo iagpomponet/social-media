@@ -19,6 +19,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isLogged: (loggedToken === "true" && userDataFromStorage) ? true : false, 
     data: userDataFromStorage ? JSON.parse(userDataFromStorage) : null
   });
+
+  console.log(`loggedToken`, loggedToken)
   
   //if user data is something then save it on local storage 
   useEffect(() => {

@@ -19,28 +19,57 @@ import {
 
 
 
-import { useGetUser, useGetUserPosts } from "../../services";
-import { useState } from "react";
+import { useEditUser, useGetUser, useGetUserPosts } from "../../services";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/auth";
 import Post from "../../components/Post";
+import { useQueryClient } from "react-query";
 
 export default function Profile() {
+  const queryClient = useQueryClient()
   const { userData } = useAuth();
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // TODO: Build edit profile feature
-  const [isEditing, setIsEditing] = useState(false);
+  const { mutateAsync, isLoading: isEditUserLoading } = useEditUser();
+
+
 
   const { id } = useParams();
+
 
   const { data: profileUserData, isLoading } = useGetUser(id || "");
   const { data: posts, isLoading: isPostsLoading } = useGetUserPosts(profileUserData?._id);
 
-  const onSubmit = (data: any) => {
-    console.log("data :>> ", data);
+
+  console.log('userData', userData);
+  console.log('profileUserData :>> ', profileUserData);
+
+  const onSubmit = async (data: any) => {
+    const userId = userData?.data?._id;
+
+    if(userId){
+      await mutateAsync({
+        payload: data, 
+        id: userId
+      })
+
+      onClose();
+      queryClient.invalidateQueries("user");
+    }
+    console.log('data', data);
   };
+
+  useEffect(() => {
+      if(isOpen){
+        reset({
+          firstName: profileUserData?.firstName,
+          lastName: profileUserData?.lastName,
+          description: profileUserData?.description,
+        })
+      }
+  }, [isOpen]);
 
   return (
     <Flex height="100%">
@@ -51,19 +80,21 @@ export default function Profile() {
       ) : null}
       {profileUserData ? (
         <Flex flexDirection="column" width="100%" height="100%">
-          <Flex display="flex" p={4} height="180px" shadow="base" margin="0 auto" alignItems="center" width="100%">
+         
+          <Container height="100%" py={8}>
+          <Flex display="flex" height="180px"  mb={6} alignItems="center" width="100%">
             <Flex margin="0 auto" alignItems="center" maxWidth="900px" width="100%" height="100%">
-              <Avatar size="2xl" src={profileUserData?.profilePic} />
+              <Avatar size="base" src={profileUserData?.profilePic} />
               <Stack ml={4} mt="auto" mb="auto">
                 <Text>
                   {profileUserData?.firstName}
-                  {profileUserData?.lastName}
+                  {` ${profileUserData?.lastName}`}
                 </Text>
-                <Text mb={4} fontWeight="light" fontSize="sm">
+                <Text mb={6} fontWeight="light" fontSize="sm">
                   {profileUserData?.description}
                 </Text>
-                {userData?.data?._id === profileUserData?.data?._id && (
-                  <Button onClick={onOpen} colorScheme="purple" maxWidth="100px" fontSize="sm">
+                {userData?.data?._id === profileUserData?._id && (
+                  <Button onClick={onOpen} colorScheme="purple" maxWidth="100px" fontSize="sm" mt="20px!important">
                     Edit
                   </Button>
                 )}
@@ -71,7 +102,6 @@ export default function Profile() {
             </Flex>
           </Flex>
 
-          <Container boxShadow="base" height="100%" py={8}>
             <Flex flexDirection="column" alignItems="flex-start" justifyContent="space-between" width="100%">
               <Flex width="100%" flexDirection="column">
                 <Flex width="100%">
@@ -110,11 +140,11 @@ export default function Profile() {
             <ModalBody>
               <Input fontSize="sm" mb={2} mr={1} placeholder="First Name" {...register("firstName", { required: true })} />
               <Input fontSize="sm" mb={2} placeholder="Last Name" {...register("lastName", { required: true })} />
-              <Textarea fontSize="sm" mb={2} placeholder="Description" {...register("description", { required: true })} />
+              <Textarea resize="none" fontSize="sm" mb={2} placeholder="Description" {...register("description", { required: true })} />
             </ModalBody>
 
             <ModalFooter>
-              <Button type="submit" fontSize="sm" colorScheme="purple">
+              <Button isLoading={isEditUserLoading} type="submit" fontSize="sm" colorScheme="purple">
                 Save
               </Button>
             </ModalFooter>

@@ -7,6 +7,7 @@ interface UserI {
   email: string;
   password: string;
   profilePic: string;
+  description: string;
 }
 
 const User = new mongoose.Schema<UserI>({
@@ -16,6 +17,13 @@ const User = new mongoose.Schema<UserI>({
   lastName: { type: String, required: true },
   email: { type: String, required: true, match: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/ },
   password: { type: String, required: true },
+  description: { type: String, required: false },
 }, { strict: true });
+
+User.virtual('posts', {
+  ref: 'post',
+  localField: '_id',
+  foreignField: 'owner',
+});
 
 export default mongoose.model('user', User);

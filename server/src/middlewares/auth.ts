@@ -3,16 +3,8 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    return res.status(500).json({
-      error_message: 'Auth header is missing',
-    });
-  }
-
   try {
-    const token = authHeader.split(' ')[1];
+    const token = req.cookies.socialMediaTokenLogin || '';
     const tokenSecret = process.env.JWT_SECRET || '';
     const isTokenValid = jwt.verify(token, tokenSecret);
 
@@ -20,8 +12,22 @@ const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
       return next();
     }
   } catch (err) {
+    if (err instanceof Error && err?.name === 'TokenExpiredError') {
+      return res
+        .cookie('socialMediaIsLogged', 'false', {
+          expires: new Date(Date.now() + 900),
+          secure: false,
+          httpOnly: false,
+        })
+        .status(500).json({
+          error_message: 'Invalid auth token',
+          error_data: err,
+        });
+    }
+
     return res.status(500).json({
       error_message: 'Invalid auth token',
+      error_data: err,
     });
   }
 };

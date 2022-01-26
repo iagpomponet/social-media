@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 import { LoginState } from "../types/auth";
 
@@ -11,18 +11,21 @@ interface AuthContextI {
 const authContext = createContext<AuthContextI>({} as AuthContextI);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const loggedToken = Cookies.get('socialMediaIsLogged');
+  const loggedToken = Cookies.get("socialMediaIsLogged");
 
   const userDataFromStorage = localStorage.getItem("userData");
 
+  debugger;
+
   const [userData, setUserData] = useState<LoginState>({
-    isLogged: (loggedToken === "true" && userDataFromStorage) ? true : false, 
-    data: userDataFromStorage ? JSON.parse(userDataFromStorage) : null
+    isLogged: loggedToken === "true" && userDataFromStorage ? true : false,
+    data: userDataFromStorage ? JSON.parse(userDataFromStorage) : null,
   });
 
-  console.log(`loggedToken`, loggedToken)
-  
-  //if user data is something then save it on local storage 
+  console.log(`loggedToken`, loggedToken);
+  console.log("userData", userData);
+
+  //if user data is something then save it on local storage
   useEffect(() => {
     if (userData !== null && localStorage.getItem("userData") === "") {
       localStorage.setItem("userData", JSON.stringify(userData?.data));

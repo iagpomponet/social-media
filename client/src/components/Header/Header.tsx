@@ -1,7 +1,7 @@
 import { Text, Flex, Avatar, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/auth";
-import { useSignOut } from "../../services";
+import { useSignOut } from "../../services/api";
 
 export default function Header() {
   const { userData } = useAuth();
@@ -32,9 +32,11 @@ export default function Header() {
               </MenuButton>
               <MenuList>
                 <Link to={`/profile/${userData?.data?._id}`}>
-                <MenuItem fontSize="sm">Profile</MenuItem>
+                  <MenuItem fontSize="sm">Profile</MenuItem>
                 </Link>
-                <MenuItem fontSize="sm" onClick={handleSignOut}>Logout</MenuItem>
+                <MenuItem fontSize="sm" onClick={handleSignOut}>
+                  Logout
+                </MenuItem>
               </MenuList>
             </Menu>
           </Flex>

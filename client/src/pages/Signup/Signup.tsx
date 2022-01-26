@@ -4,7 +4,7 @@ import { Input, Button, Flex, Alert, AlertIcon, AlertTitle, CloseButton, Text } 
 
 import * as css from "./Signup.styles";
 import { SignupForm } from "./Signup.types";
-import { useSignUp } from "../../services";
+import { useSignUp } from "../../services/api";
 import { useEffect } from "react";
 import { useAuth } from "../../context/auth";
 
@@ -15,7 +15,7 @@ export default function Signup() {
     handleSubmit,
     formState: { errors },
   } = useForm();
- 
+
   const { setUserData } = useAuth();
 
   const navigate = useNavigate();
@@ -42,9 +42,9 @@ export default function Signup() {
     const response = await mutateAsync(payload);
 
     return setUserData({
-      isLogged: true, 
-      data: response
-    })
+      isLogged: true,
+      data: response,
+    });
   };
 
   useEffect(() => {
@@ -54,15 +54,7 @@ export default function Signup() {
   }, [data, navigate]);
 
   return (
-    <Flex
-      height="350px"
-      width="100%"
-      maxWidth="360px"
-      flexDirection="column"
-      p={4}
-      justifyContent="center"
-      alignItems="center"
-    >
+    <Flex height="350px" width="100%" maxWidth="360px" flexDirection="column" p={4} justifyContent="center" alignItems="center">
       <css.Form onSubmit={handleSubmit(onSubmit)}>
         <Text mb={4} fontWeight="semibold" color="purple" fontSize="2xl" marginRight="auto">
           Sign up
@@ -71,10 +63,17 @@ export default function Signup() {
           <Input fontSize="sm" isInvalid={errors.firstName} mb={2} mr={1} placeholder="First Name" {...register("firstName", { required: true })} />
           <Input fontSize="sm" isInvalid={errors.lastName} mb={2} placeholder="Last Name" {...register("lastName", { required: true })} />
         </Flex>
-        <Input  fontSize="sm" isInvalid={errors.email} mb={2} placeholder="Email" {...register("email", { required: true })} />
-        <Input  fontSize="sm" type="password" isInvalid={errors.password} mb={2} placeholder="Password" {...register("password", { required: true })} />
+        <Input fontSize="sm" isInvalid={errors.email} mb={2} placeholder="Email" {...register("email", { required: true })} />
         <Input
-        fontSize="sm"
+          fontSize="sm"
+          type="password"
+          isInvalid={errors.password}
+          mb={2}
+          placeholder="Password"
+          {...register("password", { required: true })}
+        />
+        <Input
+          fontSize="sm"
           type="password"
           placeholder="Confirm Password"
           isInvalid={errors.confirmPassword}

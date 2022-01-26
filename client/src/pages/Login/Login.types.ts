@@ -1,3 +1,3 @@
 export interface LoginProps {
-    signUpOpen?: boolean;
+  signUpOpen?: boolean;
 }

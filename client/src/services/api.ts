@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import api from './apiConfig';
+import api from "./apiConfig";
 
 import { useMutation, useQuery } from "react-query";
 import { Post, UserData } from "../types/api";
@@ -22,7 +22,6 @@ interface editUserPayload {
     description?: string;
 }
 
-
 //user
 const signUp = (payload: signUpPayload) => {
     return api.post(`/user/signup`, payload).then((res) => res.data);
@@ -43,19 +42,17 @@ const getUser = (id: string) => api.get(`/user/${id}`).then((res) => res.data);
 
 export const useGetUser = (id: string) => useQuery("user", () => getUser(id));
 
-const editUser = async ({
-    id, payload
-}: { id: string, payload: editUserPayload }) => {
+const editUser = async ({ id, payload }: { id: string; payload: editUserPayload }) => {
     const res = await api.put(`/user/${id}`, payload);
     return res.data;
-}
+};
 
-export const useEditUser = () => useMutation(editUser)
+export const useEditUser = () => useMutation(editUser);
 
 const signOut = async () => {
     const data = await api.post(`/user/signout`);
     return data;
-}
+};
 
 export const useSignOut = () => useMutation(signOut);
 
@@ -68,7 +65,6 @@ const getUserPosts = (userId: string): Promise<Post[] | null> => {
 export const useGetUserPosts = (userId: string) => {
     return useQuery(["userPosts", userId], () => getUserPosts(userId));
 };
-
 
 const likePost = ({ postId, userId }: { postId: string; userId: string }) => {
     return api.post(`/post/${postId}/like`, { userId }).then((res) => res.data);

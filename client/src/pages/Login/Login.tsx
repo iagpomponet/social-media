@@ -17,7 +17,6 @@ import { useAuth } from "../../context/auth";
 import { LoginProps } from "./Login.types";
 
 export default function Login({ signUpOpen = false }: LoginProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const { register, handleSubmit } = useForm();
   const { mutateAsync, isLoading, error, data } = useSignIn();
   const navigate = useNavigate();

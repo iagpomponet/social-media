@@ -22,7 +22,7 @@ export default function Signup() {
 
   const { data, mutateAsync, error, isLoading } = useSignUp();
 
-  const onSubmit = async (data: SignupForm) => {
+  const onSubmit = async (data: any) => {
     const { password, confirmPassword, email, firstName, lastName } = data;
 
     if (password !== confirmPassword) {

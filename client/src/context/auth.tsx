@@ -15,19 +15,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const userDataFromStorage = localStorage.getItem("userData");
 
-  debugger;
-
   const [userData, setUserData] = useState<LoginState>({
     isLogged: loggedToken === "true" && userDataFromStorage ? true : false,
     data: userDataFromStorage ? JSON.parse(userDataFromStorage) : null,
   });
 
-  console.log(`loggedToken`, loggedToken);
-  console.log("userData", userData);
 
   //if user data is something then save it on local storage
   useEffect(() => {
-    if (userData !== null && localStorage.getItem("userData") === "") {
+    debugger;
+    if (userData !== null && localStorage.getItem("userData") !== JSON.stringify(userData)) {
       localStorage.setItem("userData", JSON.stringify(userData?.data));
     }
   }, [userData]);

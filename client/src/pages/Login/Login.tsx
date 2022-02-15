@@ -50,34 +50,7 @@ export default function Login({ signUpOpen = false }: LoginProps) {
     <>
       <Flex background="#f0f2f5" height="100%" px={4} justifyContent="center" alignItems="center">
         <Flex flexWrap={["wrap", "wrap", "wrap", "nowrap"]} width="100%" maxWidth="1200px" margin="0 auto" justifyContent="center">
-          <Stack
-            spacing="24px"
-            mr={[0, 0, 10]}
-            mb={4}
-            height="auto"
-            p={4}
-            maxWidth={["100%", "100%", "200px"]}
-            justifyContent="flex-start"
-            alignItems="flex-start"
-            flexDirection="column"
-          >
-            <Text
-              margin="0 auto"
-              textAlign={["center", "center", "initial"]}
-              maxWidth="200px"
-              fontSize="4xl"
-              color="purple"
-              fontWeight="bold"
-              letterSpacing="-2px"
-              lineHeight="32px"
-            >
-              A Social Network
-            </Text>
-            <Text textAlign={["center", "center", "initial"]}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse lacinia rhoncus nunc ut tincidunt. Vestibulum non vehicula quam,
-              sit amet vehicula libero.{" "}
-            </Text>
-          </Stack>
+         
           <Flex background="white" px={4} py={4} height="300px" width="100%" maxWidth="300px" borderRadius="10px" flexDirection="column">
             <css.Form onSubmit={handleSubmit(onSubmit)}>
               <Input {...register("email", { required: true })} fontSize="sm" mb={2} placeholder="Email" type="text" />

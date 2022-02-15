@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useEditUser, useGetUser, useGetUserPosts } from "../../services/api";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/auth";
 import Post from "../../components/Post";
@@ -28,16 +28,20 @@ import { AiOutlineCamera } from "react-icons/ai";
 import * as css from "./Profile.styles";
 import { useUploadImage } from "../../services/cloudinary";
 
+
 export default function Profile() {
   const queryClient = useQueryClient();
-  const { userData } = useAuth();
-  const { register, handleSubmit, reset } = useForm();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [profilePicPreview, setProfilePicPreview] = useState();
 
+  const { userData, setUserData } = useAuth();
+  const { register, handleSubmit, reset, getValues } = useForm();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { mutateAsync, isLoading: isEditUserLoading } = useEditUser();
   const { mutateAsync: uploadImage } = useUploadImage();
 
   const { id } = useParams();
+
+  const profilePic = getValues("profilePic");
 
   const { data: profileUserData, isLoading } = useGetUser(id || "");
   const { data: posts, isLoading: isPostsLoading } = useGetUserPosts(profileUserData?._id);
@@ -45,24 +49,25 @@ export default function Profile() {
   const onSubmit = async (data: any) => {
     const userId = userData?.data?._id;
 
-    console.log("AAAAA");
-
-    debugger;
-
     if (userId) {
-      const uploadFormData = new FormData();
-      // await uploadImage();
+      if (data?.profilePic?.length) {
+        const uploadFormData = new FormData();
 
-      console.log("data :>> ", data);
 
-      for (let i = 0; i < data?.profilePic?.length; i++) {
-        let file = data?.profilePic[i];
-        uploadFormData.append("file", file);
+        for (let i = 0; i < data?.profilePic?.length; i++) {
+          let file = data?.profilePic[i];
+          uploadFormData.append("file", file);
+        }
+
+        uploadFormData.append("upload_preset", "px7rrl8n");
+
+        const {
+          data: { secure_url },
+        } = await uploadImage(uploadFormData);
+        data.profilePic = secure_url;
+      } else {
+        delete data.profilePic;
       }
-
-      uploadFormData.append("api_key", "969922765324353");
-
-      await uploadImage(uploadFormData);
 
       await mutateAsync({
         payload: data,
@@ -74,6 +79,8 @@ export default function Profile() {
     }
   };
 
+
+
   useEffect(() => {
     if (isOpen) {
       reset({
@@ -83,6 +90,30 @@ export default function Profile() {
       });
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (profilePic && profilePic.length) {
+      const reader = new FileReader();
+
+      reader.addEventListener("load", () => {
+        if (reader.result) {
+          setProfilePicPreview(reader.result as any);
+        }
+      });
+
+      reader.readAsDataURL(profilePic[0]);
+    }
+  }, [profilePic]);
+
+
+  useEffect(() => {
+    if (profileUserData && JSON.stringify(profileUserData) !== JSON.stringify(userData)) {
+      setUserData({
+        isLogged: true,
+        data: profileUserData,
+      });
+    }
+  }, [profileUserData]);
 
   return (
     <Flex height="100%">
@@ -149,7 +180,7 @@ export default function Profile() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <ModalBody>
               <css.EditPicAvatarContainer>
-                <Avatar size="xl" src={profileUserData?.profilePic} mb={4} />
+                <Avatar size="xl" src={profilePicPreview || profileUserData?.profilePic} mb={4} />
                 <css.editPicSvgWrapper>
                   <AiOutlineCamera fill="white" />
                   <css.uploadInput {...register("profilePic", { required: false })} />

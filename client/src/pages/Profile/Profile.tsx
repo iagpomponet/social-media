@@ -45,6 +45,10 @@ export default function Profile() {
   const onSubmit = async (data: any) => {
     const userId = userData?.data?._id;
 
+    console.log("AAAAA");
+
+    debugger;
+
     if (userId) {
       const uploadFormData = new FormData();
       // await uploadImage();
@@ -55,6 +59,8 @@ export default function Profile() {
         let file = data?.profilePic[i];
         uploadFormData.append("file", file);
       }
+
+      uploadFormData.append("api_key", "969922765324353");
 
       await uploadImage(uploadFormData);
 
@@ -146,7 +152,7 @@ export default function Profile() {
                 <Avatar size="xl" src={profileUserData?.profilePic} mb={4} />
                 <css.editPicSvgWrapper>
                   <AiOutlineCamera fill="white" />
-                  <css.uploadInput {...register("profilePic", { required: true })} />
+                  <css.uploadInput {...register("profilePic", { required: false })} />
                 </css.editPicSvgWrapper>
               </css.EditPicAvatarContainer>
               <Input fontSize="sm" mb={2} mr={1} placeholder="First Name" {...register("firstName", { required: true })} />

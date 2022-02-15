@@ -28,7 +28,6 @@ import { AiOutlineCamera } from "react-icons/ai";
 import * as css from "./Profile.styles";
 import { useUploadImage } from "../../services/cloudinary";
 
-
 export default function Profile() {
   const queryClient = useQueryClient();
   const [profilePicPreview, setProfilePicPreview] = useState();
@@ -52,7 +51,6 @@ export default function Profile() {
     if (userId) {
       if (data?.profilePic?.length) {
         const uploadFormData = new FormData();
-
 
         for (let i = 0; i < data?.profilePic?.length; i++) {
           let file = data?.profilePic[i];
@@ -79,8 +77,6 @@ export default function Profile() {
     }
   };
 
-
-
   useEffect(() => {
     if (isOpen) {
       reset({
@@ -104,7 +100,6 @@ export default function Profile() {
       reader.readAsDataURL(profilePic[0]);
     }
   }, [profilePic]);
-
 
   useEffect(() => {
     if (profileUserData && JSON.stringify(profileUserData) !== JSON.stringify(userData)) {

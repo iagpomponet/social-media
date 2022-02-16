@@ -21,7 +21,7 @@ export default function Login({ signUpOpen = false }: LoginProps) {
   const { mutateAsync, isLoading, error, data } = useSignIn();
   const navigate = useNavigate();
 
-  const { setUserData } = useAuth();
+  const { setUserData, userData } = useAuth();
 
   const tError = error as AxiosError;
 
@@ -35,8 +35,9 @@ export default function Login({ signUpOpen = false }: LoginProps) {
   };
 
   useEffect(() => {
-    if (data) {
-      navigate(`/profile/${data?._id}`);
+    debugger;
+    if (userData?.isLogged) {
+      navigate(`/profile/${userData.data?._id}`);
     }
   }, [data, navigate]);
 
@@ -50,7 +51,6 @@ export default function Login({ signUpOpen = false }: LoginProps) {
     <>
       <Flex background="#f0f2f5" height="100%" px={4} justifyContent="center" alignItems="center">
         <Flex flexWrap={["wrap", "wrap", "wrap", "nowrap"]} width="100%" maxWidth="1200px" margin="0 auto" justifyContent="center">
-         
           <Flex background="white" px={4} py={4} height="300px" width="100%" maxWidth="300px" borderRadius="10px" flexDirection="column">
             <css.Form onSubmit={handleSubmit(onSubmit)}>
               <Input {...register("email", { required: true })} fontSize="sm" mb={2} placeholder="Email" type="text" />

@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   //if user data is something then save it on local storage
   useEffect(() => {
-    debugger;
     if (userData !== null && localStorage.getItem("userData") !== JSON.stringify(userData)) {
       localStorage.setItem("userData", JSON.stringify(userData?.data));
     }
